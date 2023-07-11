@@ -1,0 +1,5 @@
+name: 'calculo beneficio'
+type: module
+description: 'Calcular beneficio de los productos.'
+core_version_requirement: 8.x || 9.x || 10.x
+package: 'Custom'

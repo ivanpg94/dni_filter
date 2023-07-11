@@ -1,0 +1,93 @@
+<?php
+
+
+function dni_filter_preprocess_page(&$variables)
+{
+/*  for ($id = 10; $id <= 2000; $id++) {
+    //$id = 35038;
+    $database = \Drupal::database();
+    $parameter = \Drupal::entityTypeManager()->getStorage('commerce_order')->load($id);
+    if($parameter ==null){
+      $id++;
+    }else {
+      $query = $database->select('profile__field_customer_cif', 'pfc');
+      $query->fields('pfc', ['field_customer_cif_value']);
+      $query->condition('pfc.entity_id', $id);
+      $results = $query->execute()->fetchAssoc();
+      if (isset($results)){
+        $nif = $results['field_customer_cif_value'];
+
+    if ($parameter->billing_profile) {
+      if ($parameter->billing_profile->entity->field_customer_cif[0] !== null) {
+        $nif = $results['field_customer_cif_value'];
+      }else{
+        $nif = "vacio";
+      }
+    }else{
+      $nif = "vacio";
+    }
+    $query = $database->upsert('commerce_order__field_nif');
+    $query->fields([
+      'bundle',
+      'deleted',
+      'entity_id',
+      'revision_id',
+      'langcode',
+      'delta',
+      'field_nif_value',
+    ]);
+    $query->values([
+      'physical',
+      0,
+      $id,
+      $id,
+      'und',
+      0,
+      $nif,
+    ]);
+    $query->key('entity_id');
+    $query->execute();
+  }
+}}*/
+  $request = \Drupal::service('request_stack')->getCurrentRequest();
+  $requestUri = $request->getRequestUri();
+  $complete = (substr($requestUri, -9));
+  $review = (substr($requestUri, -7));
+  if ($complete == '/complete' || $review == '/review') {
+    $database = \Drupal::database();
+    $parameter = \Drupal::routeMatch()->getParameter('commerce_order');
+    $id = $parameter->order_id->value;
+    if ($parameter->billing_profile->entity->field_customer_cif) {
+      if ($parameter->billing_profile->entity->field_customer_cif[0] !== null) {
+        $nif = $parameter->getBillingProfile()->field_customer_cif[0]->value;
+      }else{
+        $nif = "vacio";
+      }
+    }else{
+      $nif = "vacio";
+    }
+    $query = $database->upsert('commerce_order__field_nif');
+    $query->fields([
+      'bundle',
+      'deleted',
+      'entity_id',
+      'revision_id',
+      'langcode',
+      'delta',
+      'field_nif_value',
+    ]);
+    $query->values([
+      'physical',
+      0,
+      $id,
+      $id,
+      'und',
+      0,
+      $nif,
+    ]);
+    $query->key('entity_id');
+    $query->execute();
+
+  }
+
+}
